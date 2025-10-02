@@ -1,0 +1,29 @@
+# (optional) global options: set your ACME email
+{
+	email {CADDY_EMAIL}
+}
+
+# Wildcard + apex (DNS challenge supports wildcards)
+*.acloudapart.com {
+	tls {
+		# Uses the Cloudflare token from env
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+	encode gzip
+	# Example: send everything to a future "dashboard" container
+	reverse_proxy http://dashboard:8080
+}
+
+acloudapart.com {
+	tls {
+		dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	}
+	encode gzip
+	# Example: redirect apex to a subdomain
+	redir https://www.acloudapart.com{uri}
+}
+
+openwebui.acloudapart.com {
+  encode gzip
+  reverse_proxy http://openwebui:8080
+}

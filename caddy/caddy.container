@@ -1,0 +1,22 @@
+[Unit]
+Description=Caddy container
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=local/caddy:latest
+ContainerName=caddy
+PublishPort=8080:80
+PublishPort=8443:443
+EnvironmentFile=/home/ron/podman/caddy/.env
+Volume=/home/ron/podman/caddy/Caddyfile:/etc/caddy/Caddyfile:ro,Z
+Volume=caddy_data:/data
+Volume=caddy_config:/config
+Network=caddy
+
+[Service]
+Restart=always
+TimeoutStartSec=900
+
+[Install]
+WantedBy=default.target

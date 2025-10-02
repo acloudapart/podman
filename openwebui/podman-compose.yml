@@ -1,0 +1,21 @@
+services:
+  openwebui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: openwebui
+    expose:
+      - "8080"
+    # Load all runtime vars from .env (placed next to this file)
+    env_file:
+      - .env
+    volumes:
+      - openwebui_data:/app/backend/data
+    networks:
+      - caddy
+    restart: unless-stopped
+
+networks:
+  caddy:
+    external: true
+
+volumes:
+  openwebui_data:

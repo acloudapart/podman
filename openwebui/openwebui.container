@@ -1,0 +1,18 @@
+[Unit]
+Description=OpenWebUI container
+After=network-online.target
+Wants=network-online.target
+
+[Container]
+Image=ghcr.io/open-webui/open-webui:main
+ContainerName=openwebui
+EnvironmentFile=./.env
+Volume=openwebui_data:/app/backend/data
+Network=caddy
+
+[Service]
+Restart=always
+TimeoutStartSec=900
+
+[Install]
+WantedBy=default.target
