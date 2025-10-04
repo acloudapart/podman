@@ -35,3 +35,8 @@ Thumbs.db
 # -----------------------------------------------------------------------------
 .git/
 .gitignore~
+openwebui/deep-search-profile.json
+openwebui/low-quota-search.json
+openwebui/search-profile.json
+
+

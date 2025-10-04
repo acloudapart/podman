@@ -4,7 +4,6 @@ SHELL := /bin/bash
 .SHELLFLAGS := -eu -o pipefail -c
 MAKEFLAGS += --no-builtin-rules
 .DEFAULT_GOAL := deploy
-BUILD_CACHE ?= /mnt/build-cache
 
 
 # Tools/paths
@@ -69,27 +68,17 @@ reload:
 # Build images for services that have a Dockerfile in the service folder.
 # Tags come from the first Image= in a *.container; fallback to local/<svc>:latest.
 build:
-	@echo "Building images for services with a Dockerfile..."
+	@echo "Force-building images for services with Dockerfile..."
 	for svc in $(SERVICES); do \
 		dir="$(ROOT)/$$svc"; \
 		if [ -f "$$dir/Dockerfile" ]; then \
 			img="$$(grep -h -m1 '^Image=' "$$dir"/*.container 2>/dev/null | head -n1 | cut -d= -f2- || true)"; \
 			[ -z "$$img" ] && img="local/$$svc:latest"; \
-			mkdir -p "$(BUILD_CACHE)/gomod" "$(BUILD_CACHE)/gobuild" "$(BUILD_CACHE)/npm" "$(BUILD_CACHE)/pip" "$(BUILD_CACHE)/cargo"; \
-			echo "  [$${svc}] podman build -t '$$img' with caches..."; \
-			$(PODMAN) build -t "$$img" \
-				--volume "$(BUILD_CACHE)/gobuild":/root/.cache/go-build:Z \
-				--volume "$(BUILD_CACHE)/gomod":/go/pkg/mod:Z \
-				--volume "$(BUILD_CACHE)/npm":/root/.npm:Z \
-				--volume "$(BUILD_CACHE)/pip":/root/.cache/pip:Z \
-				--volume "$(BUILD_CACHE)/cargo-reg":/usr/local/cargo/registry:Z \
-				--volume "$(BUILD_CACHE)/cargo-tgt":/usr/local/cargo/target:Z \
-				"$$dir"; \
+			echo "  [$${svc}] podman build --pull=always --no-cache -t '$$img' '$$dir'"; \
+			"$(PODMAN)" build --pull=always --no-cache -t "$$img" "$$dir"; \
 		fi; \
 	done
 
-
-# Pull images for services WITHOUT a Dockerfile (only if missing locally).
 pull:
 	@echo "Pulling (refreshing) images for services without Dockerfile..."
 	for svc in $(SERVICES); do

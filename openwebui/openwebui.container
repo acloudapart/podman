@@ -6,7 +6,7 @@ Wants=network-online.target
 [Container]
 Image=ghcr.io/open-webui/open-webui:main
 ContainerName=openwebui
-EnvironmentFile=./.env
+EnvironmentFile=/home/ron/podman/openwebui/.env
 Volume=openwebui_data:/app/backend/data
 Network=caddy
 
